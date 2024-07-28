@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved Items</title>
+    <style>
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .header {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            color: #666666;
+            /* Grey color for heading */
+        }
+
+        .segment-controller {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h2>Saved Items</h2>
+            <div>
+                <button>Action</button>
+                <button>Search</button>
+                <button>Filter</button>
+                <button>Active Filter</button>
+                <button id="add-new-btn">Add New</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>S.No</th>
+                        <th>Location</th>
+                        <th>Places</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Table rows will be dynamically generated here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="segment-controller">
+            <label><input type="radio" name="segment" value="option1"> Option 1</label>
+            <label><input type="radio" name="segment" value="option2"> Option 2</label>
+            <label><input type="radio" name="segment" value="option3"> Option 3</label>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("add-new-btn").addEventListener("click", function () {
+            var tableBody = document.getElementById("table-body");
+            var newRow = document.createElement("tr");
+            newRow.innerHTML = `
+      <td></td>
+      <td><input type="text" name="location"></td>
+      <td><input type="text" name="places"></td>
+      <td><input type="date" name="date"></td>
+      <td><input type="text" name="status"></td>
+      <td>
+        <button onclick="saveRow(this)">Save</button>
+        <button onclick="cancelRow(this)">Cancel</button>
+      </td>
+    `;
+            tableBody.appendChild(newRow);
+            updateSerialNumbers();
+        });
+
+        function saveRow(button) {
+            var row = button.parentNode.parentNode;
+            var inputs = row.querySelectorAll('input[type="text"], input[type="date"]');
+            var newRow = document.createElement("tr");
+            inputs.forEach(function (input) {
+                var cell = document.createElement("td");
+                cell.textContent = input.value;
+                newRow.appendChild(cell);
+            });
+            var actionCell = document.createElement("td");
+            actionCell.innerHTML = '<button onclick="updateRow(this)">Update</button><button onclick="deleteRow(this)">Delete</button><button onclick="submitRow(this)">Submit</button>';
+            newRow.appendChild(actionCell);
+            var tableBody = document.getElementById("table-body");
+            tableBody.appendChild(newRow);
+            row.remove();
+            updateSerialNumbers();
+        }
+
+        function cancelRow(button) {
+            var row = button.parentNode.parentNode;
+            row.remove();
+            updateSerialNumbers();
+        }
+
+        function updateRow(button) {
+            var row = button.parentNode.parentNode;
+            var cells = row.querySelectorAll('td');
+            cells.forEach(function (cell, index) {
+                if (index !== 0 && index !== cells.length - 1) { // Skip first and last cell (Serial number and Actions)
+                    var input = document.createElement('input');
+                    input.type = 'text';
+                    input.value = cell.textContent;
+                    cell.textContent = '';
+                    cell.appendChild(input);
+                }
+            });
+            button.textContent = 'Save';
+            button.setAttribute('onclick', 'saveUpdate(this)');
+        }
+
+        function saveUpdate(button) {
+            var row = button.parentNode.parentNode;
+            var inputs = row.querySelectorAll('input[type="text"]');
+            inputs.forEach(function (input, index) {
+                row.cells[index].textContent = input.value;
+            });
+            button.textContent = 'Update';
+            button.setAttribute('onclick', 'updateRow(this)');
+        }
+
+        function deleteRow(button) {
+            var row = button.parentNode.parentNode;
+            row.remove();
+            updateSerialNumbers();
+        }
+
+        function submitRow(button) {
+            // Here you can define the logic to submit the row data
+            alert("Row submitted!");
+        }
+
+        function updateSerialNumbers() {
+            var tableBody = document.getElementById("table-body");
+            var rows = tableBody.getElementsByTagName("tr");
+            for (var i = 0; i < rows.length; i++) {
+                var cells = rows[i].getElementsByTagName("td");
+                cells[0].textContent = ("0" + (i + 1)).slice(-2); // Add leading zero if needed
+            }
+        }
+    </script>
+
+</body>
+
+</html>

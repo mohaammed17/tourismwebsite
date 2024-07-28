@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Map Modal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    <style>
+        /* Global Styles */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+        }
+
+        .container {
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            align-items: flex-start;
+            flex-direction: row;
+        }
+
+        /* Map Styles */
+        #map-container {
+            position: relative;
+            margin-bottom: 20px;
+            margin-right: 20px;
+        }
+
+        #map {
+            width: 800px; /* Adjust width as needed */
+            height: auto;
+            display: block;
+        }
+
+        map {
+            display: block;
+        }
+
+        area {
+            cursor: pointer;
+        }
+
+        /* Place Details Styles */
+        .place-details {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .place-details.show {
+            display: block;
+            height: 80vh;
+            width: 30vw;
+        }
+
+        .place-details h2 {
+            margin-top: 0;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .place-details h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .place-details p {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .place-details img {
+            height: auto;
+            display: block;
+            margin: 0 auto 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        .place-details button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 5px;
+        }
+
+        .place-details button:hover {
+            background-color: #0056b3;
+        }
+
+        @media screen and (max-width: 400px) {
+            .container {
+                display: flex;
+                align-items: flex-start;
+                flex-direction: row;
+            }
+
+            .place-details.show {
+                width: 80vw;
+            }
+
+            .place-details img {
+                width: 80vw;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Map Section -->
+        <div id="map-container">
+            <img id="map" src="img/map.jpg" alt="Map" usemap="#map">
+            <map name="map">
+                <area shape="circle" coords="100,100,50" onclick="showPlaceDetails(1)">
+                <area shape="circle" coords="200,200,50" onclick="showPlaceDetails(2)">
+                <!-- Add more areas as needed -->
+            </map>
+        </div>
+
+        <!-- Place Details Section -->
+        <div class="place-details" id="placeDetails">
+            <h2 id="locationName"></h2>
+            <h3 id="placeName"></h3>
+            <p id="placeDescription"></p>
+            <img id="placeImage" src="" alt="Place Image">
+            <button onclick="savePlace()">Save Place</button>
+            <button onclick="addToCalendar()">Add to Calendar</button>
+            <button onclick="submitRequest()">Submit Request</button>
+        </div>
+
+    </div>
+
+    <script>
+        // Placeholder data for places
+        var placesData = [
+            {
+                location: "Edinburgh",
+                name: "Edinburgh Castle",
+                description: "Edinburgh Castle, perched atop Castle Rock, is an iconic symbol of Scotland’s heritage. It offers stunning views of the city and holds significant historical importance.",
+                imageURL: "img/p1.jpg"
+            },
+            {
+                location: "Highlands",
+                name: "Loch Ness",
+                description: "Loch Ness, famous for its legendary monster, is a large, deep freshwater loch in the Scottish Highlands. The scenic beauty and mysterious lore make it a must-visit destination.",
+                imageURL: "img/p2.jpg"
+            },
+            // Add more places as needed
+        ];
+
+        function showPlaceDetails(placeIndex) {
+            var place = placesData[placeIndex - 1]; // Adjust index since array is zero-based
+            document.getElementById('placeDetails').classList.add('show');
+            document.getElementById('locationName').textContent = "Location: " + place.location;
+            document.getElementById('placeName').textContent = "Place: " + place.name;
+            document.getElementById('placeDescription').textContent = place.description;
+            document.getElementById('placeImage').src = place.imageURL;
+        }
+
+        function savePlace() {
+            // Code to save the place
+        }
+
+        function addToCalendar() {
+            // Code to add the place to the calendar
+        }
+
+        function submitRequest() {
+            // Code to submit the request
+        }
+    </script>
+
+</body>
+
+</html>

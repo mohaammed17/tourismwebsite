@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timeline Scheduler</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .schedule-section {
+            flex: 1 1 60%;
+            margin-right: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .events-section {
+            flex: 1 1 30%;
+            overflow-y: auto;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        #scheduleTable {
+            width: 100%;
+            border-collapse: collapse;
+            overflow-x: auto;
+        }
+
+        #scheduleTable th,
+        #scheduleTable td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        #scheduleTable th {
+            background-color: #f2f2f2;
+            min-width: unset;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .event-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .event-list li {
+            margin-bottom: 5px;
+            padding: 10px;
+            background-color: #f2f2f2;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .hidden-column {
+            display: none;
+        }
+
+        #submitBtn {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #submitBtn:hover {
+            background-color: #218838;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #007bff;
+        }
+
+        select {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        select:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="schedule-section">
+            <div class="header">
+                <h2>Select Month</h2>
+                <select id="monthSelect">
+                    <!-- Options for months can be dynamically added here using JavaScript -->
+                </select>
+            </div>
+            <table id="scheduleTable">
+                <!-- Table content will be generated dynamically using JavaScript -->
+            </table>
+            <button id="submitBtn">Submit</button>
+        </div>
+    </div>
+    <script>
+        // Get references to DOM elements
+        const monthSelect = document.getElementById('monthSelect');
+        const scheduleTable = document.getElementById('scheduleTable');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // Function to generate options for months
+        function generateMonthOptions() {
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            for (let i = 0; i < months.length; i++) {
+                const option = document.createElement('option');
+                option.text = months[i];
+                option.value = i + 1; // Month value (1-based)
+                monthSelect.appendChild(option);
+            }
+        }
+
+        // Function to generate table content for selected month
+        function generateSchedule(month) {
+            // Clear existing table content
+            scheduleTable.innerHTML = '';
+
+            // Add table headers for the first 10 days
+            const headerRow = scheduleTable.insertRow();
+            headerRow.insertCell().textContent = 'Time';
+            for (let i = 1; i <= 10; i++) {
+                const currentDate = new Date(new Date().getFullYear(), month - 1, i);
+                const headerCell = document.createElement('th');
+                headerCell.textContent = `${currentDate.toLocaleDateString('en-US', { weekday: 'short' })} ${i}`;
+                headerRow.appendChild(headerCell);
+            }
+
+            // Add table rows and cells
+            for (let hour = 0; hour < 24; hour++) {
+                const row = scheduleTable.insertRow();
+                const timeCell = row.insertCell();
+                timeCell.textContent = `${hour}:00`;
+                for (let day = 1; day <= 10; day++) {
+                    const cell = row.insertCell();
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.placeholder = 'Event Name';
+                    cell.appendChild(input);
+                }
+            }
+        }
+
+        // Event listener for month select change
+        monthSelect.addEventListener('change', function () {
+            const selectedMonth = parseInt(monthSelect.value);
+            generateSchedule(selectedMonth);
+        });
+
+        // Event listener for submit button
+        submitBtn.addEventListener('click', function () {
+            // Retrieve user inputs and save them to local storage
+            const inputs = scheduleTable.querySelectorAll('input[type="text"]');
+            const events = [];
+            inputs.forEach(input => {
+                events.push(input.value);
+            });
+            localStorage.setItem('events', JSON.stringify(events));
+
+            // Display saved events in the table cells
+            displaySavedEvents(events);
+        });
+
+        // Function to display saved events in the table cells
+        function displaySavedEvents(events) {
+            const cells = scheduleTable.querySelectorAll('td');
+            events.forEach((event, index) => {
+                const inputCell = cells[index].querySelector('input[type="text"]');
+                if (inputCell.value === event) {
+                    cells[index].style.backgroundColor = '#28a745'; // Set background color to green
+                    cells[index].style.color = '#fff'; // Set text color to white
+                }
+            });
+        }
+
+        // Initialize month select options
+        generateMonthOptions();
+        // Generate schedule for the current month initially
+        const currentMonth = new Date().getMonth() + 1;
+        generateSchedule(currentMonth);
+
+        // Check if there are saved events in local storage and display them
+        const savedEvents = JSON.parse(localStorage.getItem('events'));
+        if (savedEvents) {
+            displaySavedEvents(savedEvents);
+        }
+    </script>
+
+</body>
+
+</html>
